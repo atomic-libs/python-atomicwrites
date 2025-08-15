@@ -1,9 +1,11 @@
 import errno
 import os
 
-from atomicwrites import atomic_write
-
 import pytest
+
+safeatomic = pytest.importorskip("safeatomic")
+
+from atomicwrites import atomic_write
 
 
 def test_atomic_write(tmpdir):
@@ -89,3 +91,7 @@ def test_atomic_write_in_pwd(tmpdir):
         assert len(tmpdir.listdir()) == 1
     finally:
         os.chdir(orig_curdir)
+
+
+def test_wrapper_exposes_safeatomic():
+    assert atomic_write is safeatomic.atomic_write
