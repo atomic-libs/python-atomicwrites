@@ -1,11 +1,15 @@
 import errno
 import os
+import sys
+
+# Ensure local packages are importable when running tests directly
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 import pytest
 
 safeatomic = pytest.importorskip("safeatomic")
 
-from atomicwrites import atomic_write
+from atomicwrites import AtomicWriter, atomic_write, move_atomic, replace_atomic
 
 
 def test_atomic_write(tmpdir):
@@ -93,5 +97,53 @@ def test_atomic_write_in_pwd(tmpdir):
         os.chdir(orig_curdir)
 
 
-def test_wrapper_exposes_safeatomic():
-    assert atomic_write is safeatomic.atomic_write
+def test_atomic_write_wrapper(monkeypatch):
+    called = {}
+
+    def fake_atomic_write(path, writer_cls=AtomicWriter, **kwargs):
+        called["args"] = (path, writer_cls, kwargs)
+        return "ok"
+
+    monkeypatch.setattr(safeatomic, "atomic_write", fake_atomic_write)
+
+    res = atomic_write("/tmp/foo", overwrite=True)
+
+    assert res == "ok"
+    assert called["args"][0] == "/tmp/foo"
+    assert called["args"][1] is AtomicWriter
+    assert called["args"][2] == {"overwrite": True}
+
+
+def test_replace_atomic_wrapper(monkeypatch):
+    called = {}
+
+    def fake_replace(src, dst):
+        called["args"] = (src, dst)
+
+    monkeypatch.setattr(safeatomic, "replace_atomic", fake_replace)
+
+    replace_atomic("a", "b")
+
+    assert called["args"] == ("a", "b")
+
+
+def test_move_atomic_wrapper(monkeypatch):
+    called = {}
+
+    def fake_move(src, dst):
+        called["args"] = (src, dst)
+
+    monkeypatch.setattr(safeatomic, "move_atomic", fake_move)
+
+    move_atomic("a", "b")
+
+    assert called["args"] == ("a", "b")
+
+
+def test_atomicwriter_is_subclass():
+    assert issubclass(AtomicWriter, safeatomic.AtomicWriter)
+
+
+def test_atomicwriter_overwrite_mapping(tmpdir):
+    aw = AtomicWriter(tmpdir.join("ha"), overwrite=True)
+    assert getattr(aw, "_permit_overwrite", None) is True
