@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python-atomicwrites"
+version = "0.1.0"
+description = "Compatibility wrapper around safeatomic for legacy atomicwrites API"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.2.1",
+    "safeatomic",
+]
+
+[tool.setuptools]
+packages = ["atomicwrites"]
+
+[tool.setuptools.package-dir]
+atomicwrites = "atomicwrites"
+
+[tool.uv.sources]
+safeatomic = { git = "https://github.com/atomic-libs/safeatomic.git" }
+
+# uv pip install -e .[dev]
+[project.optional-dependencies]
+dev = ["build", "twine", "pytest"]
