@@ -24,6 +24,7 @@ setup(
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['tests.*', 'tests']),
     include_package_data=True,
+    install_requires=['safeatomic @ git+https://github.com/atomic-libs/safeatomic.git'],
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2',

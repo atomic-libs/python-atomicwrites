@@ -2,6 +2,13 @@
 python-atomicwrites
 ===================
 
+This distribution is now only a thin compatibility wrapper around
+`safeatomic <https://github.com/atomic-libs/safeatomic>`_.  New code
+should depend on ``safeatomic`` directly.  The dependency is resolved
+from its GitHub repository, for example::
+
+    pip install git+https://github.com/atomic-libs/safeatomic.git
+
 Unmaintained
 ============
 
