@@ -1,3 +1,5 @@
+# atomicwrites/__init__.py
+
 """Compatibility wrapper around the :mod:`safeatomic` package.
 
 This module exposes the historic :mod:`atomicwrites` API but delegates all
